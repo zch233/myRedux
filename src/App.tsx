@@ -1,13 +1,11 @@
 import './App.css'
-import { useContext, createContext, FC, useState, useEffect } from 'react';
+import { FC, useState, useEffect } from 'react';
 
 type User = {
   info: {
     name: string
   }
 }
-
-const appContext = createContext<{ state: User, setState: any }>(null)
 
 type Action = {type: any;value: any;}
 
@@ -27,48 +25,53 @@ const reducer = (state: User, action: Action) => {
   }
 }
 
-const connect = (Component: FC<{dispatch: any;state: any;}>) => {
-  return () => {
-    const [,update] = useState({})
-    const {state, setState} = useContext(appContext)
-    const dispatch = (action: Action) => {
-      setState(reducer(state, action))
-      update({})
-    }
-    return <Component dispatch={dispatch} state={state} />
-  }
-}
-
 const store = {
   state: {
     info: {name: 'zch'}
   },
   setState(data: any) {
+    store.listeners.map(v => v())
     store.state = data
   },
+  listeners: [],
+  subscribe(fn) {
+    store.listeners.push(fn)
+    return () => store.listeners = store.listeners.filter(v => v !== fn)
+  }
+}
+
+const connect = (Component: FC<{dispatch: any;state: any;}>) => {
+  return () => {
+    const [,update] = useState({})
+    const {state, setState, subscribe} = store
+    useEffect(() => {
+      subscribe(() => update({}))
+    }, [])
+    const dispatch = (action: Action) => {
+      setState(reducer(state, action))
+    }
+    return <Component dispatch={dispatch} state={state} />
+  }
 }
 
 function App() {
   console.log('render', 'App');
   return (
-    <appContext.Provider value={store}>
       <div className="App">
         <FirstChild />
         <SecondChild />
         <ThirdChild />
       </div>
-    </appContext.Provider>
   )
 }
 
-const FirstChild = () => {
+const FirstChild = connect(({state}) => {
   console.log('render', 'FirstChild');
-  const {state} = useContext(appContext)
   return <section>
     <p>FirstChild</p>
     <p>{state.info.name}</p>
   </section>
-}
+})
 
 const SecondChild = connect(({dispatch, state}: {dispatch: any;state: User;}) => {
   console.log('render', 'SecondChild');
