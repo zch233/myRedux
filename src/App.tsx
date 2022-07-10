@@ -1,5 +1,5 @@
 import './App.css'
-import {useState, useContext, createContext} from 'react'
+import { useState, useContext, createContext, FC } from 'react';
 
 type User = {
   info: {
@@ -8,20 +8,6 @@ type User = {
 }
 
 const appContext = createContext<{ user: User, setUser: any }>(null)
-
-function App() {
-  const [user, setUser] = useState({info: {name: 'zch'}})
-  return (
-    <appContext.Provider value={{user, setUser}}>
-      <div className="App">
-        <FirstChild />
-        <Wrapper />
-        <ThirdChild />
-      </div>
-    </appContext.Provider>
-  )
-}
-
 
 type Action = {type: any;value: any;}
 
@@ -41,12 +27,27 @@ const reducer = (state: User, action: Action) => {
   }
 }
 
-const Wrapper = () => {
-  const {user, setUser} = useContext(appContext)
-  const dispatch = (action: Action) => {
-    setUser(reducer(user, action))
+const connect = (Component: FC<{dispatch: any;state: any;}>) => {
+  return () => {
+    const {user, setUser} = useContext(appContext)
+    const dispatch = (action: Action) => {
+      setUser(reducer(user, action))
+    }
+    return <Component dispatch={dispatch} state={user} />
   }
-  return <SecondChild dispatch={dispatch} state={user} />
+}
+
+function App() {
+  const [user, setUser] = useState({info: {name: 'zch'}})
+  return (
+    <appContext.Provider value={{user, setUser}}>
+      <div className="App">
+        <FirstChild />
+        <SecondChild />
+        <ThirdChild />
+      </div>
+    </appContext.Provider>
+  )
 }
 
 const FirstChild = () => {
@@ -57,12 +58,12 @@ const FirstChild = () => {
   </section>
 }
 
-const SecondChild = ({dispatch, state}: {dispatch: any;state: User;}) => {
+const SecondChild = connect(({dispatch, state}: {dispatch: any;state: User;}) => {
   return <section>
     <p>SecondChild</p>
     <input type="text" value={state.info.name} onChange={(e) => dispatch({type: 'updateUserName',value: e.target.value})}/>
   </section>;
-}
+})
 const ThirdChild = () => <section>ThirdChild</section>
 
 export default App
