@@ -1,5 +1,5 @@
 import './App.css'
-import { useState, useContext, createContext, FC } from 'react';
+import { useContext, createContext, FC, useState, useEffect } from 'react';
 
 type User = {
   info: {
@@ -7,7 +7,7 @@ type User = {
   }
 }
 
-const appContext = createContext<{ user: User, setUser: any }>(null)
+const appContext = createContext<{ state: User, setState: any }>(null)
 
 type Action = {type: any;value: any;}
 
@@ -29,19 +29,27 @@ const reducer = (state: User, action: Action) => {
 
 const connect = (Component: FC<{dispatch: any;state: any;}>) => {
   return () => {
-    const {user, setUser} = useContext(appContext)
+    const {state, setState} = useContext(appContext)
     const dispatch = (action: Action) => {
-      setUser(reducer(user, action))
+      setState(reducer(state, action))
     }
-    return <Component dispatch={dispatch} state={user} />
+    return <Component dispatch={dispatch} state={state} />
   }
 }
 
+const store = {
+  state: {
+    info: {name: 'zch'}
+  },
+  setState(data: any) {
+    store.state = data
+  },
+}
+
 function App() {
-  const [user, setUser] = useState({info: {name: 'zch'}})
   console.log('render', 'App');
   return (
-    <appContext.Provider value={{user, setUser}}>
+    <appContext.Provider value={store}>
       <div className="App">
         <FirstChild />
         <SecondChild />
@@ -53,10 +61,10 @@ function App() {
 
 const FirstChild = () => {
   console.log('render', 'FirstChild');
-  const {user} = useContext(appContext)
+  const {state} = useContext(appContext)
   return <section>
     <p>FirstChild</p>
-    <p>{user.info.name}</p>
+    <p>{state.info.name}</p>
   </section>
 }
 
