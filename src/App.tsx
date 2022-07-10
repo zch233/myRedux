@@ -39,6 +39,7 @@ const connect = (Component: FC<{dispatch: any;state: any;}>) => {
 
 function App() {
   const [user, setUser] = useState({info: {name: 'zch'}})
+  console.log('render', 'App');
   return (
     <appContext.Provider value={{user, setUser}}>
       <div className="App">
@@ -51,6 +52,7 @@ function App() {
 }
 
 const FirstChild = () => {
+  console.log('render', 'FirstChild');
   const {user} = useContext(appContext)
   return <section>
     <p>FirstChild</p>
@@ -59,11 +61,16 @@ const FirstChild = () => {
 }
 
 const SecondChild = connect(({dispatch, state}: {dispatch: any;state: User;}) => {
+  console.log('render', 'SecondChild');
   return <section>
     <p>SecondChild</p>
     <input type="text" value={state.info.name} onChange={(e) => dispatch({type: 'updateUserName',value: e.target.value})}/>
   </section>;
 })
-const ThirdChild = () => <section>ThirdChild</section>
+
+const ThirdChild = () => {
+  console.log('render', 'ThirdChild');
+  return <section>ThirdChild</section>
+}
 
 export default App
