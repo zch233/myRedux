@@ -15,31 +15,19 @@ function App() {
     <appContext.Provider value={{user, setUser}}>
       <div className="App">
         <FirstChild />
-        <SecondChild />
+        <Wrapper />
         <ThirdChild />
       </div>
     </appContext.Provider>
   )
 }
 
-const FirstChild = () => {
-  const {user} = useContext(appContext)
-  return <section>
-    <p>FirstChild</p>
-    <p>{user.info.name}</p>
-  </section>
-}
 
-const reducer = (state: User, action: {type: any;value: any;}) => {
+type Action = {type: any;value: any;}
+
+const reducer = (state: User, action: Action) => {
   if (action.type) {
     if (action.type === 'updateUserName') {
-      console.log({
-        ...state,
-        info: {
-          ...state.info,
-          name: action.value
-        }
-      });
       return {
         ...state,
         info: {
@@ -53,11 +41,26 @@ const reducer = (state: User, action: {type: any;value: any;}) => {
   }
 }
 
-const SecondChild = () => {
+const Wrapper = () => {
   const {user, setUser} = useContext(appContext)
+  const dispatch = (action: Action) => {
+    setUser(reducer(user, action))
+  }
+  return <SecondChild dispatch={dispatch} state={user} />
+}
+
+const FirstChild = () => {
+  const {user} = useContext(appContext)
+  return <section>
+    <p>FirstChild</p>
+    <p>{user.info.name}</p>
+  </section>
+}
+
+const SecondChild = ({dispatch, state}: {dispatch: any;state: User;}) => {
   return <section>
     <p>SecondChild</p>
-    <input type="text" value={user.info.name} onChange={(e) => setUser(reducer(user, {type: 'updateUserName',value: e.target.value}))}/>
+    <input type="text" value={state.info.name} onChange={(e) => dispatch({type: 'updateUserName',value: e.target.value})}/>
   </section>;
 }
 const ThirdChild = () => <section>ThirdChild</section>
