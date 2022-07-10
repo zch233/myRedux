@@ -29,9 +29,11 @@ const reducer = (state: User, action: Action) => {
 
 const connect = (Component: FC<{dispatch: any;state: any;}>) => {
   return () => {
+    const [,update] = useState({})
     const {state, setState} = useContext(appContext)
     const dispatch = (action: Action) => {
       setState(reducer(state, action))
+      update({})
     }
     return <Component dispatch={dispatch} state={state} />
   }
