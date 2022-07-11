@@ -25,11 +25,18 @@ const reducer = (state: User, action: Action) => {
   }
 }
 
-const store = {
+interface Store<T> {
+  state: T,
+  setState: (data: any) => void;
+  listeners: (() => void)[]
+  subscribe: (fn: () => void) => () => void
+}
+
+const store: Store<{info: {name: string;}}> = {
   state: {
     info: {name: 'zch'}
   },
-  setState(data: any) {
+  setState(data) {
     store.listeners.map(v => v())
     store.state = data
   },
