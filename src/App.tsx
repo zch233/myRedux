@@ -12,7 +12,7 @@ function App() {
   )
 }
 
-const FirstChild = connect(({state}) => {
+const FirstChild = connect()(({state}) => {
   console.log('render', 'FirstChild');
   return <section>
     <p>FirstChild</p>
@@ -20,7 +20,7 @@ const FirstChild = connect(({state}) => {
   </section>
 })
 
-const SecondChild = connect(({dispatch, state}: {dispatch: any;state: User;}) => {
+const SecondChild = connect()(({dispatch, state}: {dispatch: any;state: User;}) => {
   console.log('render', 'SecondChild');
   return <section>
     <p>SecondChild</p>

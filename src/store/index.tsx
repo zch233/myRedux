@@ -46,7 +46,7 @@ export const store: Store<{info: {name: string;}}> = {
   }
 }
 
-export const connect = (Component: FC<{dispatch: any;state: any;}>) => {
+export const connect = (mapStateToProps?:any) => (Component: FC<{dispatch: any;state: any;}>) => {
   return () => {
     const [,update] = useState({})
     const {state, setState, subscribe} = store
@@ -56,6 +56,7 @@ export const connect = (Component: FC<{dispatch: any;state: any;}>) => {
     const dispatch = (action: Action) => {
       setState(reducer(state, action))
     }
-    return <Component dispatch={dispatch} state={state} />
-  }
+    const data = mapStateToProps ? mapStateToProps(state) : {state}
+    return <Component dispatch={dispatch} {...data} />
+   }
 }
