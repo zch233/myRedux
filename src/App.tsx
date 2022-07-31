@@ -1,5 +1,5 @@
 import './App.css'
-import { connect, User, store, appContext } from './store';
+import { connect, store, appContext } from './store';
 
 function App() {
   console.log('render', 'App');
@@ -14,9 +14,15 @@ function App() {
   )
 }
 
-const FirstChild = connect((state) => {
-  return {userInfo: state.info}
-})(({userInfo}) => {
+const connectToUser = connect(
+  (state) => {
+    return {userInfo: state.info}
+  },
+  (dispatch) => {
+    return {update: (value) => dispatch({type: 'updateUserName',value})}
+  })
+
+const FirstChild = connectToUser(({userInfo}) => {
   console.log('render', 'FirstChild');
   return <section>
     <p>FirstChild</p>
@@ -24,14 +30,7 @@ const FirstChild = connect((state) => {
   </section>
 })
 
-const SecondChild = connect(
-  (state) => {
-  return {userInfo: state.info}
-},
-  (dispatch) => {
-  return {update: (value) => dispatch({type: 'updateUserName',value})}
-})
-(({update, userInfo}) => {
+const SecondChild = connectToUser(({update, userInfo}) => {
   console.log('render', 'SecondChild');
   return <section>
     <p>SecondChild</p>
