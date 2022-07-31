@@ -14,19 +14,28 @@ function App() {
   )
 }
 
-const FirstChild = connect()(({state}) => {
+const FirstChild = connect((state) => {
+  return {userInfo: state.info}
+})(({userInfo}) => {
   console.log('render', 'FirstChild');
   return <section>
     <p>FirstChild</p>
-    <p>{state.info.name}</p>
+    <p>{userInfo.name}</p>
   </section>
 })
 
-const SecondChild = connect(null, (dispatch) => ({update: (value) => dispatch({type: 'updateUserName',value})}))(({update, state}: {dispatch: any;state: User;}) => {
+const SecondChild = connect(
+  (state) => {
+  return {userInfo: state.info}
+},
+  (dispatch) => {
+  return {update: (value) => dispatch({type: 'updateUserName',value})}
+})
+(({update, userInfo}) => {
   console.log('render', 'SecondChild');
   return <section>
     <p>SecondChild</p>
-    <input type="text" value={state.info.name} onChange={(e) => update(e.target.value)}/>
+    <input type="text" value={userInfo.name} onChange={(e) => update(e.target.value)}/>
   </section>;
 })
 
