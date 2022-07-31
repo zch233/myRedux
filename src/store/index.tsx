@@ -1,9 +1,10 @@
-import { FC, useEffect, useState } from 'react';
+import {createContext, FC, useContext, useEffect, useState} from 'react';
 
 export type User = {
   info: {
     name: string
   }
+  token: string
 }
 
 export type Action = {type: any;value: any;}
@@ -31,13 +32,14 @@ export interface Store<T> {
   subscribe: (fn: () => void) => () => void
 }
 
-export const store: Store<{info: {name: string;}}> = {
+export const store: Store<User> = {
   state: {
-    info: {name: 'zch'}
+    info: {name: 'zch'},
+    token: '111'
   },
   setState(data) {
-    store.listeners.map(v => v())
     store.state = data
+    store.listeners.map(v => v())
   },
   listeners: [],
   subscribe(fn) {
@@ -48,15 +50,26 @@ export const store: Store<{info: {name: string;}}> = {
 
 export const connect = (mapStateToProps?:any) => (Component: FC<{dispatch: any;state: any;}>) => {
   return () => {
+    const {state, setState, subscribe} = useContext(appContext)
     const [,update] = useState({})
-    const {state, setState, subscribe} = store
+    const data = mapStateToProps ? mapStateToProps(state) : {state}
     useEffect(() => {
-      subscribe(() => update({}))
-    }, [])
+      return subscribe(() => {
+        const newData = mapStateToProps ? mapStateToProps(store.state) : {state: store.state}
+        const changed = Object.keys(data).reduce((changed,key) => {
+          data[key] !== newData[key] && (changed.changed = true)
+          return changed
+        }, {changed: false})
+        if(changed.changed) {
+          update({})
+        }
+      })
+    }, [mapStateToProps])
     const dispatch = (action: Action) => {
       setState(reducer(state, action))
     }
-    const data = mapStateToProps ? mapStateToProps(state) : {state}
     return <Component dispatch={dispatch} {...data} />
    }
 }
+
+export const appContext = createContext<Store<User>>(store)

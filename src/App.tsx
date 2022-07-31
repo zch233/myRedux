@@ -1,14 +1,16 @@
 import './App.css'
-import { connect, User } from './store';
+import { connect, User, store, appContext } from './store';
 
 function App() {
   console.log('render', 'App');
   return (
+    <appContext.Provider value={store}>
       <div className="App">
         <FirstChild />
         <SecondChild />
         <ThirdChild />
       </div>
+    </appContext.Provider>
   )
 }
 
@@ -28,9 +30,13 @@ const SecondChild = connect()(({dispatch, state}: {dispatch: any;state: User;}) 
   </section>;
 })
 
-const ThirdChild = () => {
+const ThirdChild = connect((state) => {
+  return {
+    token: state.token
+  }
+})(({token}) => {
   console.log('render', 'ThirdChild');
-  return <section>ThirdChild</section>
-}
+  return <section>ThirdChild {token}</section>
+})
 
 export default App
