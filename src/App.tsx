@@ -1,6 +1,37 @@
 import './App.css'
-import { connect, store, appContext } from './store';
+import {connect, appContext, createStore, Action} from './store';
 import {connectToUser} from "./connects/user";
+
+export type User = {
+  info: {
+    name: string
+  }
+  token: string
+}
+
+const reducer = (state: User, action: Action) => {
+  if (action.type) {
+    if (action.type === 'updateUserName') {
+      return {
+        ...state,
+        info: {
+          ...state.info,
+          name: action.value
+        }
+      }
+    }
+  } else {
+    return state
+  }
+}
+
+const initState: User = {
+    info: {name: 'zch'},
+    token: '111'
+  }
+
+const store = createStore(reducer, initState)
+
 
 function App() {
   console.log('render', 'App');
@@ -14,8 +45,6 @@ function App() {
     </appContext.Provider>
   )
 }
-
-
 
 const FirstChild = connectToUser(({userInfo}) => {
   console.log('render', 'FirstChild');
