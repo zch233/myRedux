@@ -1,5 +1,5 @@
 import './App.css'
-import {connect, appContext, createStore, Action} from './store';
+import {connect, createStore, Action, Provider} from './store';
 import {connectToUser} from "./connects/user";
 
 export type User = {
@@ -36,13 +36,13 @@ const store = createStore(reducer, initState)
 function App() {
   console.log('render', 'App');
   return (
-    <appContext.Provider value={store}>
+    <Provider store={store}>
       <div className="App">
         <FirstChild />
         <SecondChild />
         <ThirdChild />
       </div>
-    </appContext.Provider>
+    </Provider>
   )
 }
 

@@ -1,4 +1,4 @@
-import {createContext, FC, useContext, useEffect, useState} from 'react';
+import React, {createContext, FC, useContext, useEffect, useState} from 'react';
 
 export type Action = {type: any;value: any;}
 
@@ -56,4 +56,10 @@ export const createStore = (reducer, initState) => {
   return store
 }
 
-export const appContext = createContext(store)
+const appContext = createContext(null)
+
+export const Provider: React.FC<{store: any; children: React.ReactNode;}> = (props) => {
+  return <appContext.Provider value={props.store}>
+    {props.children}
+  </appContext.Provider>
+}
