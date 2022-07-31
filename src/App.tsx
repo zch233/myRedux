@@ -1,5 +1,6 @@
 import './App.css'
 import { connect, store, appContext } from './store';
+import {connectToUser} from "./connects/user";
 
 function App() {
   console.log('render', 'App');
@@ -14,13 +15,7 @@ function App() {
   )
 }
 
-const connectToUser = connect(
-  (state) => {
-    return {userInfo: state.info}
-  },
-  (dispatch) => {
-    return {update: (value) => dispatch({type: 'updateUserName',value})}
-  })
+
 
 const FirstChild = connectToUser(({userInfo}) => {
   console.log('render', 'FirstChild');
