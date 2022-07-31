@@ -48,11 +48,15 @@ export const store: Store<User> = {
   }
 }
 
-export const connect = (mapStateToProps?:any) => (Component: FC<{dispatch: any;state: any;}>) => {
+export const connect = (mapStateToProps?:any, mapDispatchToProps?:any) => (Component: FC<{dispatch: any;state: any;}>) => {
   return () => {
     const {state, setState, subscribe} = useContext(appContext)
     const [,update] = useState({})
+    const dispatch = (action: Action) => {
+      setState(reducer(state, action))
+    }
     const data = mapStateToProps ? mapStateToProps(state) : {state}
+    const newDispatch = mapDispatchToProps ? mapDispatchToProps(dispatch) : {dispatch}
     useEffect(() => {
       return subscribe(() => {
         const newData = mapStateToProps ? mapStateToProps(store.state) : {state: store.state}
@@ -65,10 +69,8 @@ export const connect = (mapStateToProps?:any) => (Component: FC<{dispatch: any;s
         }
       })
     }, [mapStateToProps])
-    const dispatch = (action: Action) => {
-      setState(reducer(state, action))
-    }
-    return <Component dispatch={dispatch} {...data} />
+
+    return <Component {...newDispatch} {...data} />
    }
 }
 

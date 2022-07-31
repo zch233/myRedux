@@ -22,11 +22,11 @@ const FirstChild = connect()(({state}) => {
   </section>
 })
 
-const SecondChild = connect()(({dispatch, state}: {dispatch: any;state: User;}) => {
+const SecondChild = connect(null, (dispatch) => ({update: (value) => dispatch({type: 'updateUserName',value})}))(({update, state}: {dispatch: any;state: User;}) => {
   console.log('render', 'SecondChild');
   return <section>
     <p>SecondChild</p>
-    <input type="text" value={state.info.name} onChange={(e) => dispatch({type: 'updateUserName',value: e.target.value})}/>
+    <input type="text" value={state.info.name} onChange={(e) => update(e.target.value)}/>
   </section>;
 })
 
