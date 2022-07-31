@@ -49,7 +49,7 @@ export const store: Store<User> = {
 }
 
 export const connect = (mapStateToProps?:any, mapDispatchToProps?:any) => (Component: FC<{dispatch: any;state: any;}>) => {
-  return () => {
+  return (props: any) => {
     const {state, setState, subscribe} = useContext(appContext)
     const [,update] = useState({})
     const dispatch = (action: Action) => {
@@ -70,7 +70,7 @@ export const connect = (mapStateToProps?:any, mapDispatchToProps?:any) => (Compo
       })
     }, [mapStateToProps])
 
-    return <Component {...newDispatch} {...data} />
+    return <Component {...props} {...newDispatch} {...data} />
    }
 }
 
