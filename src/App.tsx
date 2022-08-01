@@ -6,7 +6,9 @@ export type User = {
   info: {
     name: string
   }
-  token: string
+  token: {
+    xxx: string;
+  }
 }
 
 const reducer = (state: User, action: Action) => {
@@ -27,7 +29,7 @@ const reducer = (state: User, action: Action) => {
 
 const initState: User = {
     info: {name: 'zch'},
-    token: '111'
+    token: {xxx: 'token'}
   }
 
 const store = createStore(reducer, initState)
@@ -68,7 +70,7 @@ const ThirdChild = connect((state) => {
   }
 })(({token}) => {
   console.log('render', 'ThirdChild');
-  return <section>ThirdChild {token}</section>
+  return <section>ThirdChild {token.xxx}</section>
 })
 
 export default App
