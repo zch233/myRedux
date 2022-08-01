@@ -10,36 +10,38 @@ interface Store<D, T> {
   subscribe: (fn: () => void) => () => void
 }
 
+let state = null
+let reducer = null
+let listeners = []
+
 const store = {
-  state: null,
-  reducer: null,
+  getState: () => state,
   setState(data) {
-    store.state = data
-    store.listeners.map(v => v())
+    state = data
+    listeners.map(v => v())
   },
-  listeners: [],
   subscribe(fn) {
-    store.listeners.push(fn)
-    return () => store.listeners = store.listeners.filter(v => v !== fn)
+    listeners.push(fn)
+    return () => listeners = listeners.filter(v => v !== fn)
   }
 }
 
 export const connect = (mapStateToProps?:any, mapDispatchToProps?:any) => (Component: FC<{dispatch: any;state: any;}>) => {
   return (props: any) => {
-    const {state, setState, subscribe} = useContext(appContext)
     const [,update] = useState({})
     const dispatch = (action: Action) => {
-      setState(store.reducer(state, action))
+      store.setState(reducer(state, action))
     }
     const data = mapStateToProps ? mapStateToProps(state) : {state}
     const newDispatch = mapDispatchToProps ? mapDispatchToProps(dispatch) : {dispatch}
     useEffect(() => {
-      return subscribe(() => {
-        const newData = mapStateToProps ? mapStateToProps(store.state) : {state: store.state}
+      return store.subscribe(() => {
+        const newData = mapStateToProps ? mapStateToProps(state) : {state}
         const changed = Object.keys(data).reduce((changed,key) => {
           data[key] !== newData[key] && (changed.changed = true)
           return changed
         }, {changed: false})
+        console.log(changed.changed);
         if(changed.changed) {
           update({})
         }
@@ -50,16 +52,12 @@ export const connect = (mapStateToProps?:any, mapDispatchToProps?:any) => (Compo
    }
 }
 
-export const createStore = (reducer, initState) => {
-  store.state = initState
-  store.reducer = reducer
+export const createStore = (_reducer, initState) => {
+  state = initState
+  reducer = _reducer
   return store
 }
 
 const appContext = createContext(null)
 
-export const Provider: React.FC<{store: any; children: React.ReactNode;}> = (props) => {
-  return <appContext.Provider value={props.store}>
-    {props.children}
-  </appContext.Provider>
-}
+export const Provider: React.FC<{store: any; children: React.ReactNode;}> = (props) => props.children
