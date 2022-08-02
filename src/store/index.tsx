@@ -26,12 +26,20 @@ const store = {
   }
 }
 
+const _dispatch = (action: Action) => {
+  store.setState(reducer(state, action))
+}
+const dispatch = (action) => {
+  if (typeof action === "function") {
+    action(dispatch)
+  } else {
+    _dispatch(action)
+  }
+}
+
 export const connect = (mapStateToProps?:any, mapDispatchToProps?:any) => (Component: FC<{dispatch: any;state: any;}>) => {
   return (props: any) => {
     const [,update] = useState({})
-    const dispatch = (action: Action) => {
-      store.setState(reducer(state, action))
-    }
     const data = mapStateToProps ? mapStateToProps(state) : {state}
     const newDispatch = mapDispatchToProps ? mapDispatchToProps(dispatch) : {dispatch}
     useEffect(() => {

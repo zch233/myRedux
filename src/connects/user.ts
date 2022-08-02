@@ -5,7 +5,7 @@ const useStates = (state) => {
 }
 
 const useDispatches = (dispatch) => {
-  return {update: (value) => dispatch({type: 'updateUserName',value})}
+  return {update: (value) => dispatch({type: 'updateUserName',value}), dispatch}
 }
 
 export const connectToUser = connect(useStates, useDispatches)

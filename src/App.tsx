@@ -56,10 +56,24 @@ const FirstChild = connectToUser(({userInfo}) => {
   </section>
 })
 
-const SecondChild = connectToUser(({update, userInfo}) => {
+const fetchUser = (dispatch) => {
+  new Promise((resolve) => {
+    setTimeout(() => {
+      resolve('1')
+    }, 3000)
+  }).then(() => {
+    dispatch({type: 'updateUserName',value: 'fetchUser'})
+  })
+}
+
+const SecondChild = connectToUser(({update, userInfo, dispatch}) => {
   console.log('render', 'SecondChild');
   return <section>
     <p>SecondChild</p>
+    <button onClick={() => {
+      // fetchUser(dispatch)
+      dispatch(fetchUser)
+    }}>点我改变</button>
     <input type="text" value={userInfo.name} onChange={(e) => update(e.target.value)}/>
   </section>;
 })
