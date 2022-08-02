@@ -41,7 +41,6 @@ export const connect = (mapStateToProps?:any, mapDispatchToProps?:any) => (Compo
           data[key] !== newData[key] && (changed.changed = true)
           return changed
         }, {changed: false})
-        console.log(changed.changed);
         if(changed.changed) {
           update({})
         }
