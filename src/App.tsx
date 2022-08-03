@@ -74,7 +74,8 @@ const SecondChild = connectToUser(({update, userInfo, dispatch}) => {
     <p>SecondChild</p>
     <button onClick={() => {
       // fetchUser(dispatch)
-      dispatch(asyncUpdateUser)
+      // dispatch(asyncUpdateUser)
+      dispatch({type: 'updateUserName',value: fetchUser()})
     }}>点我改变</button>
     <input type="text" value={userInfo.name} onChange={(e) => update(e.target.value)}/>
   </section>;

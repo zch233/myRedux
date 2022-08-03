@@ -29,11 +29,19 @@ const store = {
 const _dispatch = (action: Action) => {
   store.setState(reducer(state, action))
 }
-const dispatch = (action) => {
+const dispatchFunction = (action) => {
   if (typeof action === "function") {
     action(dispatch)
   } else {
     _dispatch(action)
+  }
+}
+
+const dispatch = (action) => {
+  if (isPromise(action.value)) {
+    action.value.then((value: any) => dispatch({...action, value}))
+  } else {
+    dispatchFunction(action)
   }
 }
 
@@ -68,3 +76,7 @@ export const createStore = (_reducer, initState) => {
 const appContext = createContext(null)
 
 export const Provider: React.FC<{store: any; children: React.ReactNode;}> = (props) => props.children
+
+const isPromise = (obj) => {
+  return !!obj && (typeof obj === 'object' || typeof obj === 'function') && typeof obj.then === 'function';
+}
