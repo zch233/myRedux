@@ -18,7 +18,7 @@ const reducer = (state: User, action: Action) => {
         ...state,
         info: {
           ...state.info,
-          name: action.value
+          name: action.payload
         }
       }
     }
@@ -65,7 +65,7 @@ const fetchUser = () =>
 
 
 const asyncUpdateUser = (dispatch) => {
-  fetchUser().then(value => dispatch({type: 'updateUserName',value}))
+  fetchUser().then(payload => dispatch({type: 'updateUserName',payload}))
 }
 
 const SecondChild = connectToUser(({update, userInfo, dispatch}) => {
@@ -73,9 +73,9 @@ const SecondChild = connectToUser(({update, userInfo, dispatch}) => {
   return <section>
     <p>SecondChild</p>
     <button onClick={() => {
-      // fetchUser(dispatch)
+      // asyncUpdateUser(dispatch)
       // dispatch(asyncUpdateUser)
-      dispatch({type: 'updateUserName',value: fetchUser()})
+      dispatch({type: 'updateUserName',payload: fetchUser()})
     }}>点我改变</button>
     <input type="text" value={userInfo.name} onChange={(e) => update(e.target.value)}/>
   </section>;

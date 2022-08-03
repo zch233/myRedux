@@ -1,6 +1,6 @@
 import React, {createContext, FC, useContext, useEffect, useState} from 'react';
 
-export type Action = {type: any;value: any;}
+export type Action = {type: any;payload: any;}
 
 interface Store<D, T> {
   state: T,
@@ -38,8 +38,8 @@ const dispatchFunction = (action) => {
 }
 
 const dispatch = (action) => {
-  if (isPromise(action.value)) {
-    action.value.then((value: any) => dispatch({...action, value}))
+  if (isPromise(action.payload)) {
+    action.payload.then((payload: any) => dispatch({...action, payload}))
   } else {
     dispatchFunction(action)
   }
